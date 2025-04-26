@@ -2,6 +2,7 @@
 #include "text.h"
 #include "util.h"
 #include "config.h"
+#include "iso9660.h"
 
 extern char _bss_start[];
 extern char _bss_end[];
@@ -36,7 +37,7 @@ extern volatile uint32_t dap_lba_high;
 extern volatile uint16_t drive_params_bps;
 extern uint8_t disk_space[];
 
-int read_sector(char *buffer, uint64_t lba) {
+int read_disk(char *buffer, uint64_t lba) {
 	dap_sectors = 2048 / drive_params_bps;
 	dap_buffer = (uint32_t)disk_space;
 	dap_lba_low = lba * dap_sectors;
@@ -46,20 +47,11 @@ int read_sector(char *buffer, uint64_t lba) {
 	return 0;
 }
 
+iso_9660_volume_descriptor_t *root = nullptr;
+
 int main() {
     memset(&_bss_start, 0, (uintptr_t)&_bss_end - (uintptr_t)&_bss_start);
 	text_reset();
-	
-	char buf[2048];
-	read_sector(buf, 16);
-
-	puts("Dumping sector below:\n", 0x07);
-	for (int i = 0; i < 2048; i++) {
-		if (!buf[i]) continue;
-		putchar(buf[i], 0x07);
-	}
-
-	for (;;);
 
 	return kmain();
 }

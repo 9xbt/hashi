@@ -116,8 +116,6 @@ do_bios_call.0:
     jmp 0x0:do_bios_call.1
 [BITS 16]
 do_bios_call.1:
-    sti
-
     xor ax, ax
     mov ds, ax
     mov es, ax
@@ -130,6 +128,8 @@ do_bios_call.1:
     je do_bios_call.set_font
     cmp ax, 0x02
     je do_bios_call.read_disk
+    cmp ax, 0x03
+    je do_bios_call.exit
 
     jmp do_bios_call.done
 do_bios_call.read_disk:
@@ -143,8 +143,11 @@ do_bios_call.set_font:
     mov bl, 0
     int 0x10
     jmp do_bios_call.done
+do_bios_call.exit:
+    mov ax, 3
+    int 0x10
+    int 0x18
 do_bios_call.done:
-    cli
     xor ax, ax
     mov ds, ax
     lgdt [gdtr]

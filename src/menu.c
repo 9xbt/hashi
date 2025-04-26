@@ -2,6 +2,8 @@
 #include "kbd.h"
 #include "util.h"
 
+extern void do_bios_call(int function, int extra);
+
 char *os_list[] = {
     "bentobox Version 0.1",
     "bentobox Version 0.1 [Serial debugging]",
@@ -37,7 +39,7 @@ void show_menu(void) {
     puts(
         "\n"
         "Use \030 and \031 to move the highlight to your choice.\n"
-        "Press enter to choose.\n",
+        "Press enter to choose and escape to exit.\n",
     0x07);
 
     int selection = 0;
@@ -55,7 +57,10 @@ void show_menu(void) {
 
     readkey:
         int c = read_scancode();
-        if (c == 'H') {
+
+        if (c == '\001') {
+            do_bios_call(3, 0);
+        } else if (c == 'H') {
             selection--;
         } else if (c == 'P') {
             selection++;
