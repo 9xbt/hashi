@@ -1,5 +1,4 @@
 OUTPUT_FORMAT("binary")
-ENTRY(_start)
 
 SECTIONS
 {
@@ -18,9 +17,11 @@ SECTIONS
         *(.data)
     }
 
+    _bss_start = .;
     .bss : {
         *(.bss)
     }
+    _bss_end = .;
 
     /DISCARD/ :
 	{
