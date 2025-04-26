@@ -27,4 +27,5 @@ static const char kb_map_caps[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
+int read_scancode(void);
 int read_key(void);

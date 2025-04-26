@@ -9,3 +9,7 @@ static inline unsigned char inb(unsigned short port) {
     __asm__ volatile ("inb %1, %0" : "=a"(ret) : "Nd"(port) : "memory");
     return ret;
 }
+
+extern void do_bios_call(int function);
+
+unsigned long strlen(const char *s);

@@ -1,0 +1,74 @@
+#include "text.h"
+#include "kbd.h"
+#include "util.h"
+
+char *os_list[] = {
+    "bentobox Version 0.1",
+    "bentobox Version 0.1 [Serial debugging]",
+    0
+};
+
+int longest_length(char **list) {
+    int max = 0, len = 0;
+    for (int i = 0; list[i]; i++) {
+        len = strlen(list[i]);
+        if (len > max) {
+            max = len;
+        }
+    }
+    return max;
+}
+
+void clear_row(int count, int attr) {
+    for (int j = 0; j < count; j++) {
+        putchar(' ', attr);
+    }
+    putchar('\r', attr);
+}
+
+void show_menu(void) {
+    puts(
+        "hashi bootloader v0.1\n"
+        "\n"
+        "Please select the operating system to start:\n"
+        "\n",
+    0x07);
+    for (; os_list[y - 4]; y++);
+    puts(
+        "\n"
+        "Use \030 and \031 to move the highlight to your choice.\n"
+        "Press enter to choose.\n",
+    0x07);
+
+    int selection = 0;
+    int longest = longest_length(os_list) + 8;
+    for (;;) {
+        x = 0; y = 4;
+
+        for (int i = 0; os_list[i]; i++) {
+            clear_row(longest, i == selection ? 0x70 : 0x07);
+
+            putchar('\t', i == selection ? 0x70 : 0x07);
+            puts(os_list[i], i == selection ? 0x70 : 0x07);
+            putchar('\n', i == selection ? 0x70 : 0x07);
+        }
+
+    readkey:
+        int c = read_scancode();
+        if (c == 'H') {
+            selection--;
+        } else if (c == 'P') {
+            selection++;
+        } else goto readkey;
+
+        if (selection < 0) selection = 0;
+        if (!os_list[selection]) selection--;
+    }
+
+    for (;;) {
+		int c = read_scancode();
+		if (c > 0) {
+			putchar(c, 0x07);
+		}
+	}
+}

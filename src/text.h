@@ -1,4 +1,6 @@
 #pragma once
 
-void putchar(char c);
-void puts(char *str);
+extern int x, y;
+
+void putchar(char c, int attr);
+void puts(char *str, int attr);

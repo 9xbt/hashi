@@ -1,13 +1,21 @@
 #include "util.h"
 #include "kbd.h"
 
-int read_scancode(void) {
-	static bool keys[256];
+void wait_keyboard(void) {
 	while (!(inb(0x64) & 1)) {
 		outb(0x80, 0);
 	}
+}
+
+int read_scancode(void) {
+	static bool keys[256];
+	wait_keyboard();
 
 	unsigned char sc = inb(0x60);
+	if (sc == 0xe0) {
+		wait_keyboard();
+		sc = inb(0x60);
+	}
 	
 	if (sc & 0x80) {
 		sc &= 0x7f;

@@ -1,4 +1,5 @@
 #include "util.h"
+#include "text.h"
 #define WIDTH  80
 #define HEIGHT 25
 
@@ -22,19 +23,25 @@ void update_cursor(void) {
     outb(0x3d5, pos >> 8);
 }
 
-void putchar(char c) {
+void putchar(char c, int attr) {
     static unsigned short *vmem = (unsigned short *)0xb8000;
 
     switch (c) {
         case '\n':
             x = 0; y++;
             break;
+        case '\r':
+            x = 0;
+            break;
         case '\b':
             if (x > 0) x--;
-            vmem[y * WIDTH + x] = 0x07 << 8;
+            vmem[y * WIDTH + x] = attr << 8;
+            break;
+        case '\t':
+            puts("    ", attr);
             break;
         default:
-            vmem[y * WIDTH + x++] = (0x07 << 8) | c;
+            vmem[y * WIDTH + x++] = (attr << 8) | c;
 
             if (x >= WIDTH) {
                 x = 0; y++;
@@ -49,8 +56,8 @@ void putchar(char c) {
     update_cursor();
 }
 
-void puts(char *str) {
+void puts(char *str, int attr) {
     while (*str) {
-        putchar(*str++);
+        putchar(*str++, attr);
     }
 }
