@@ -16,6 +16,10 @@ _start:
 
     mov ax, 3
     int 0x10
+
+    mov ah, 0x48
+    mov si, drive_params
+    int 0x13
     
     cli
 
@@ -37,8 +41,6 @@ _start:
     mov gs, ax
 
     jmp 0x08:main
-
-boot_disk: db 0x00
 
 gdtr:
     dw gdt_end - gdt_base - 1
@@ -168,18 +170,35 @@ do_bios_call.2:
 section .data
     global dap_sectors
     global dap_buffer
-    global dap_lba
+    global dap_lba_low
+    global dap_lba_high
     global disk_space
+    global drive_params_bps
+    global boot_disk
+
+boot_disk: db 0x00
 
 dap:
     db 0x10
-    db 0x00
+    db 0
 dap_sectors:
-    dw 0x0000
+    dw 0
 dap_buffer:
-    dd 0x00000000   ; segment:offset
-dap_lba:
-    dq 0x0000000000000000
+    dd 0    ; segment:offset
+dap_lba_low:
+    dd 0
+dap_lba_high:
+    dd 0
+
+drive_params:
+    dw 0x1a
+    dw 0
+    dd 0
+    dd 0
+    dd 0
+    dq 0
+drive_params_bps:
+    dw 0
 
 disk_space:
     times 2048 db 0

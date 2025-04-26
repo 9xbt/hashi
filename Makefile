@@ -44,6 +44,13 @@ iso:
 	@cp bin/$(IMAGE_NAME).bin bin/iso/boot.bin
 	@mkisofs -quiet -b boot.bin -no-emul-boot -o bin/$(IMAGE_NAME).iso bin/iso/
 
+mount:
+	sudo mount -o loop bin/hashi.iso --mkdir /mnt/hashi
+
+umount:
+	sudo umount /mnt/hashi
+	sudo rmdir /mnt/hashi
+
 clean:
 	rm -f $(OBJS)
 	rm -rf bin

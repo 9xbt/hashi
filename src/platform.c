@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "text.h"
 #include "util.h"
 #include "config.h"
 
@@ -28,9 +29,37 @@ void text_reset(void) {
     outb(0x3D5, 0x20);
 }
 
+extern volatile uint16_t dap_sectors;
+extern volatile uint32_t dap_buffer;
+extern volatile uint32_t dap_lba_low;
+extern volatile uint32_t dap_lba_high;
+extern volatile uint16_t drive_params_bps;
+extern uint8_t disk_space[];
+
+int read_sector(char *buffer, uint64_t lba) {
+	dap_sectors = 2048 / drive_params_bps;
+	dap_buffer = (uint32_t)disk_space;
+	dap_lba_low = lba * dap_sectors;
+	dap_lba_high = 0;
+	do_bios_call(2, 0);
+	memcpy(buffer, disk_space, 2048);
+	return 0;
+}
+
 int main() {
     memset(&_bss_start, 0, (uintptr_t)&_bss_end - (uintptr_t)&_bss_start);
 	text_reset();
+	
+	char buf[2048];
+	read_sector(buf, 16);
+
+	puts("Dumping sector below:\n", 0x07);
+	for (int i = 0; i < 2048; i++) {
+		if (!buf[i]) continue;
+		putchar(buf[i], 0x07);
+	}
+
+	for (;;);
 
 	return kmain();
 }
