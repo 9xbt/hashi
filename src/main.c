@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "text.h"
+#include "kbd.h"
 
 extern char _bss_start[];
 extern char _bss_end[];
@@ -25,8 +26,14 @@ extern void do_bios_call(int function);
 void main() {
     memset(&_bss_start, 0, (uintptr_t)&_bss_end - (uintptr_t)&_bss_start);
 
-    do_bios_call(5);
     puts("Hello, world!\n");
+
+	for (;;) {
+		int c = read_key();
+		if (c > 0) {
+			putchar(c);
+		}
+	}
 
     for (;;) __asm__("hlt");
 }

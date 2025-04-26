@@ -29,6 +29,10 @@ void putchar(char c) {
         case '\n':
             x = 0; y++;
             break;
+        case '\b':
+            if (x > 0) x--;
+            vmem[y * WIDTH + x] = 0x07 << 8;
+            break;
         default:
             vmem[y * WIDTH + x++] = (0x07 << 8) | c;
 

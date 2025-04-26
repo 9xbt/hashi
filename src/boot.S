@@ -121,6 +121,8 @@ do_bios_call.0:
     jmp 0x0:do_bios_call.1
 [BITS 16]
 do_bios_call.1:
+    sti
+
     xor ax, ax
     mov ds, ax
     mov es, ax
@@ -139,6 +141,7 @@ do_bios_call.set_font:
     int 0x10
     jmp do_bios_call.done
 do_bios_call.done:
+    cli
     xor ax, ax
     mov ds, ax
     lgdt [gdtr]
