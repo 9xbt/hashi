@@ -42,6 +42,7 @@ boot: $(OBJS)
 iso:
 	@mkdir -p bin/iso
 	@cp bin/$(IMAGE_NAME).bin bin/iso/boot.bin
+	@cp -r base/* bin/iso/
 	@mkisofs -quiet -b boot.bin -no-emul-boot -o bin/$(IMAGE_NAME).iso bin/iso/
 
 mount:

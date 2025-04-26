@@ -69,11 +69,4 @@ void show_menu(void) {
         if (selection < 0) selection = 0;
         if (!os_list[selection]) selection--;
     }
-
-    for (;;) {
-		int c = read_scancode();
-		if (c > 0) {
-			putchar(c, 0x07);
-		}
-	}
 }

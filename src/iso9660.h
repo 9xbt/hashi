@@ -112,3 +112,7 @@ typedef struct {
 #define FLAG_CONTINUES   0x80
 
 extern iso_9660_volume_descriptor_t *root;
+extern iso_9660_directory_entry_t *dir_entry;
+
+int navigate(char *name);
+void read(char *start);

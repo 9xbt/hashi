@@ -35,7 +35,6 @@ void putchar(char c, int attr) {
             break;
         case '\b':
             if (x > 0) x--;
-            vmem[y * WIDTH + x] = attr << 8;
             break;
         case '\t':
             puts("    ", attr);

@@ -48,10 +48,61 @@ int read_disk(char *buffer, uint64_t lba) {
 }
 
 iso_9660_volume_descriptor_t *root = nullptr;
+iso_9660_directory_entry_t *dir_entry = nullptr;
+static char *dir_entries = nullptr;
 
 int main() {
     memset(&_bss_start, 0, (uintptr_t)&_bss_end - (uintptr_t)&_bss_start);
 	text_reset();
 
 	return kmain();
+}
+
+void spin(void) {
+	static int spin_i = 0;
+	putchar("/-\\|"[spin_i], 0x07);
+	putchar('\b', 0x07);
+}
+
+int navigate(char *name) {
+	dir_entry = (iso_9660_directory_entry_t *)&root->root;
+
+	dir_entries = (char *)(DATA_LOAD_BASE + dir_entry->extent_start_LSB * ISO_SECTOR_SIZE);
+	read_disk(dir_entries, dir_entry->extent_start_LSB);
+	unsigned long offset = 0;
+	for (;;) {
+		iso_9660_directory_entry_t *dir = (iso_9660_directory_entry_t *)(dir_entries + offset);
+		if (dir->length == 0) {
+			if (offset < dir_entry->extent_length_LSB) {
+				offset += 1;
+				goto try_again;
+			}
+			break;
+		}
+		if (!(dir->flags & FLAG_HIDDEN)) {
+			char file_name[dir->name_len + 1];
+			memcpy(file_name, dir->name, dir->name_len);
+			file_name[dir->name_len] = 0;
+			char *s = strchr(file_name,';');
+			if (s) {
+				*s = '\0';
+			}
+			if (!strcmp(file_name, name)) {
+				dir_entry = dir;
+				return 1;
+			}
+		}
+		offset += dir->length;
+try_again:
+		if (offset > dir_entry->extent_length_LSB) break;
+	}
+
+	return 0;
+}
+
+void read(char *start) {
+	for (unsigned int i = 0, j = 0; i < dir_entry->extent_length_LSB; i += ISO_SECTOR_SIZE, j++) {
+		if (!(j & 0x3FF)) spin();
+		read_disk(start + i, dir_entry->extent_start_LSB + j);
+	}
 }

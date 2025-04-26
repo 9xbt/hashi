@@ -1,5 +1,7 @@
 #pragma once
 
+#define DATA_LOAD_BASE 0x4000000
+
 static inline void outb(unsigned short port, unsigned char val) {
     __asm__ volatile ("outb %0, %1" : : "a"(val), "Nd"(port) : "memory");
 }
@@ -10,4 +12,6 @@ static inline unsigned char inb(unsigned short port) {
     return ret;
 }
 
+int strcmp(const char *l, const char *r);
+char *strchr(const char *s, int c);
 unsigned long strlen(const char *s);
