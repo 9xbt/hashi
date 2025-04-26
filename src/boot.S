@@ -5,19 +5,17 @@ section .text.prologue
 
     jmp 0x0:_start
 _start:
-    mov ax, 3
-    int 0x10
-
     xor ax, ax
     mov ds, ax
     mov es, ax
     mov ss, ax
+    
+    mov [boot_disk], dl
 
     mov sp, 0x7c00
 
-    mov ah, 0x42
-    mov si, dap
-    int 0x13
+    mov ax, 3
+    int 0x10
     
     cli
 
@@ -40,12 +38,7 @@ _start:
 
     jmp 0x08:main
 
-dap:
-    db 0x10         ; size of packet
-    db 0x00         ; unused
-    dw 0x0008       ; sector number
-    dd 0x00007E00   ; segment:offset
-    dq 0x01         ; lba address
+boot_disk: db 0x00
 
 gdtr:
     dw gdt_end - gdt_base - 1
@@ -131,9 +124,17 @@ do_bios_call.1:
     mov ss, ax
 
     mov ax, [bp + 8]
-    cmp ax, 0x05
+    cmp ax, 0x01
     je do_bios_call.set_font
+    cmp ax, 0x02
+    je do_bios_call.read_disk
 
+    jmp do_bios_call.done
+do_bios_call.read_disk:
+    mov ah, 0x42
+    mov dl, [boot_disk]
+    mov si, dap
+    int 0x13
     jmp do_bios_call.done
 do_bios_call.set_font:
     mov ax, 0x1112
@@ -163,3 +164,22 @@ do_bios_call.2:
     popad
     leave
     ret
+
+section .data
+    global dap_sectors
+    global dap_buffer
+    global dap_lba
+    global disk_space
+
+dap:
+    db 0x10
+    db 0x00
+dap_sectors:
+    dw 0x0000
+dap_buffer:
+    dd 0x00000000   ; segment:offset
+dap_lba:
+    dq 0x0000000000000000
+
+disk_space:
+    times 2048 db 0

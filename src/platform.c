@@ -1,6 +1,6 @@
 #include <stdint.h>
-#include "menu.h"
 #include "util.h"
+#include "config.h"
 
 extern char _bss_start[];
 extern char _bss_end[];
@@ -21,16 +21,16 @@ void *memset(void *dest, int c, long n) {
 	return dest;
 }
 
+extern void do_bios_call(int function, int extra);
+
 void text_reset(void) {
 	outb(0x3D4, 0x0A);
     outb(0x3D5, 0x20);
 }
 
-void main() {
+int main() {
     memset(&_bss_start, 0, (uintptr_t)&_bss_end - (uintptr_t)&_bss_start);
 	text_reset();
 
-	show_menu();
-
-    for (;;) __asm__("hlt");
+	return kmain();
 }

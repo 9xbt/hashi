@@ -1,4 +1,4 @@
-# Assembler
+# Toolchain
 AS = nasm
 CC = gcc
 
@@ -12,12 +12,12 @@ OBJS := $(addprefix bin/, $(S_SOURCES:.S=.o) $(C_SOURCES:.c=.o))
 # Flags
 ASFLAGS = -f elf32
 CCFLAGS = -m32 -std=c23 -Wall -Wextra -ffreestanding -nostdlib -fno-stack-protector -fno-stack-check -fno-lto -fno-pic -mno-sse -mno-sse2 -mno-red-zone
-QEMUFLAGS = -debugcon stdio -drive file=bin/$(IMAGE_NAME),format=raw
+QEMUFLAGS = -debugcon stdio -cdrom bin/$(IMAGE_NAME).iso -boot d
 
 # Output image name
-IMAGE_NAME = hashi.img
+IMAGE_NAME = hashi
 
-all: boot
+all: boot iso
 
 run: all
 	@qemu-system-i386 $(QEMUFLAGS)
@@ -36,8 +36,13 @@ bin/%.o: src/%.c
 	@$(CC) $(CCFLAGS) -c $< -o $@
 
 boot: $(OBJS)
-	@echo " LD bin/$(IMAGE_NAME)"
-	@$(LD) -m elf_i386 -Tsrc/linker.ld $^ -o bin/$(IMAGE_NAME)
+	@echo " LD bin/$(IMAGE_NAME).bin"
+	@$(LD) -m elf_i386 -Tsrc/linker.ld $^ -o bin/$(IMAGE_NAME).bin
+
+iso:
+	@mkdir -p bin/iso
+	@cp bin/$(IMAGE_NAME).bin bin/iso/boot.bin
+	@mkisofs -quiet -b boot.bin -no-emul-boot -o bin/$(IMAGE_NAME).iso bin/iso/
 
 clean:
 	rm -f $(OBJS)

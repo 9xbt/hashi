@@ -10,6 +10,4 @@ static inline unsigned char inb(unsigned short port) {
     return ret;
 }
 
-extern void do_bios_call(int function);
-
 unsigned long strlen(const char *s);
