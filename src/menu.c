@@ -63,13 +63,25 @@ void show_menu(void) {
     readkey:
         int c = read_scancode();
 
-        if (c == '\001') {
-            do_bios_call(3, 0);
-        } else if (c == 'H') {
-            selection--;
-        } else if (c == 'P') {
-            selection++;
-        } else goto readkey;
+        switch (c) {
+            case '\001':
+                do_bios_call(3, 0);
+                break;
+            case '\034':
+                clear(0x07);
+                puts("OS: ", 0x07); puts(os_list[selection].name, 0x07);
+                puts("\nPath: ", 0x07); puts(os_list[selection].path, 0x07);
+                puts("\nCmdline: ", 0x07); puts(os_list[selection].cmdline, 0x07);
+                for (;;) __asm__("hlt");
+            case 'H':
+                selection--;
+                break;
+            case 'P':
+                selection++;
+                break;
+            default:
+                goto readkey;
+        }
 
         if (selection < 0) selection = 0;
         if (!os_list[selection].name) selection--;

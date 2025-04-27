@@ -3,9 +3,34 @@
 #include "menu.h"
 #include "util.h"
 #include "iso9660.h"
+#include "kbd.h"
 
 extern int read_disk(char *buffer, uint64_t lba);
 extern void do_bios_call(int function, int extra);
+
+void warning(char *s, char *extra) {
+    puts("hashi: ", 0x07);
+    puts(s, 0x07);
+    if (extra) puts(extra, 0x07);
+    puts("\nPress any key to continue...", 0x07);
+    read_scancode();
+}
+
+void parse_mode(char *mode, [[maybe_unused]] struct os *os) {
+    if (!strcmp(mode, "80x50")) {
+        do_bios_call(1, 0);
+    } else if (strcmp(mode, "80x25")) {
+        warning("Invalid mode: ", mode);
+    }
+}
+
+void parse_path(char *path, struct os *os) {
+    os->path = path;
+}
+
+void parse_cmdline(char *cmdline, struct os *os) {
+    os->cmdline = cmdline;
+}
 
 int kmain(void) {
     char data_base[ISO_SECTOR_SIZE];
@@ -34,6 +59,8 @@ done:
     while (*config) {
         if (*config == '\n' || *config == '\r') {
             if (line[0] != ';' && line[0] != '#') {
+                #define MATCH(r,h) if (!strncmp(line, r " = ", strlen(r)+3)) { h(line + strlen(r)+3, &os_list[entry]); }
+
                 *config = 0;
                 if (line[0] == '[') {
                     char *pos = strchr(line, ']');
@@ -42,18 +69,17 @@ done:
                         entry++;
                         os_list[entry].name = line + 1;
                     }
-                } else if (!strncmp(line, "mode = ", 7)) {
-                    char *mode = line + 7;
-                    if (!strcmp(mode, "80x50")) {
-                        do_bios_call(1, 0);
-                    }
                 }
+                MATCH("mode", parse_mode);
+                MATCH("kernel", parse_path);
+                MATCH("cmdline", parse_cmdline);
             }
             line = config + 1;
         }
         config++;
     }
 
+    clear(0x07);
     for (;;) {
 	    show_menu();
     }

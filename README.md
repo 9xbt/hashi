@@ -8,7 +8,10 @@ hashi (箸) is a small multiboot-compatible x86 bootloader
     - [X] Set font
     - [X] Read disk
     - [X] Return control to BIOS
-    - [ ] Set video mode
-- [X] ISO 9660 filesystem support
+    - [X] Set video mode
+- [ ] E820 memory map parsing
+- [ ] VBE mode list parsing
+- [X] ISO 9660 filesystem reading
 - [ ] Multiboot kernel loading
-- [ ] Config parsing
+    - [ ] Elf32 parser
+- [X] Config parsing

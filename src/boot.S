@@ -130,6 +130,8 @@ do_bios_call.1:
     je do_bios_call.read_disk
     cmp ax, 0x03
     je do_bios_call.exit
+    cmp ax, 0x04
+    je do_bios_call.set_mode
 
     jmp do_bios_call.done
 do_bios_call.read_disk:
@@ -147,6 +149,10 @@ do_bios_call.exit:
     mov ax, 3
     int 0x10
     int 0x18
+do_bios_call.set_mode:
+    mov ax, [bp + 12]
+    int 0x10
+    jmp do_bios_call.done
 do_bios_call.done:
     xor ax, ax
     mov ds, ax

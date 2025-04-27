@@ -4,10 +4,11 @@
 #define HEIGHT 25
 
 int x, y;
+static unsigned short *vmem = (unsigned short *)0xb8000;
+
+extern void do_bios_call(int function, int extra);
 
 void scroll(void) {
-    static unsigned short *vmem = (unsigned short *)0xb8000;
-
     for (int i = 0; i < WIDTH * (HEIGHT - 1); i++)
         vmem[i] = vmem[i + WIDTH];
     for (int i = 0; i < WIDTH; i++)
@@ -23,9 +24,14 @@ void update_cursor(void) {
     outb(0x3d5, pos >> 8);
 }
 
-void putchar(char c, int attr) {
-    static unsigned short *vmem = (unsigned short *)0xb8000;
+void clear(int attr) {
+    for (int i = 0; i < 80 * 25; i++)
+        vmem[i] = attr << 8;
+    x = 0, y = 0;
+    update_cursor();
+}
 
+void putchar(char c, int attr) {
     switch (c) {
         case '\n':
             x = 0; y++;
