@@ -12,6 +12,9 @@ static inline unsigned char inb(unsigned short port) {
     return ret;
 }
 
+void *memcpy(void *restrict dest, const void *restrict src, long n);
+void *memset(void *dest, int c, long n);
 int strcmp(const char *l, const char *r);
+int strncmp(const char *l, const char *r, unsigned long n);
 char *strchr(const char *s, int c);
 unsigned long strlen(const char *s);
