@@ -1,17 +1,10 @@
 #include "text.h"
 #include "kbd.h"
-#include "util.h"
 #include "menu.h"
+#include "util.h"
+#include "multiboot.h"
 
 extern void do_bios_call(int function, int extra);
-
-#if 0
-char *os_list[] = {
-    "bentobox Version 0.1",
-    "bentobox Version 0.1 [Serial debugging]",
-    0
-};
-#endif
 
 struct os os_list[10];
 
@@ -34,6 +27,8 @@ void clear_row(int count, int attr) {
 }
 
 void show_menu(void) {
+start:
+    clear(0x07);
     puts(
         "hashi bootloader v0.1\n"
         "\n"
@@ -68,11 +63,8 @@ void show_menu(void) {
                 do_bios_call(3, 0);
                 break;
             case '\034':
-                clear(0x07);
-                puts("OS: ", 0x07); puts(os_list[selection].name, 0x07);
-                puts("\nPath: ", 0x07); puts(os_list[selection].path, 0x07);
-                puts("\nCmdline: ", 0x07); puts(os_list[selection].cmdline, 0x07);
-                for (;;) __asm__("hlt");
+                boot(&os_list[selection]);
+                goto start;
             case 'H':
                 selection--;
                 break;

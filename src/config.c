@@ -5,6 +5,8 @@
 #include "iso9660.h"
 #include "kbd.h"
 
+#define INI_PATH "BOOT.INI"
+
 extern int read_disk(char *buffer, uint64_t lba);
 extern void do_bios_call(int function, int extra);
 
@@ -45,8 +47,8 @@ int kmain(void) {
     for (;;) __asm__("hlt");
 
 done:
-    if (!navigate("BOOT.INI")) {
-        puts("hashi: BOOT.INI not found!\n", 0x07);
+    if (!navigate(INI_PATH)) {
+        puts("hashi: "INI_PATH" not found!\n", 0x07);
         for (;;) __asm__("hlt");
     }
 
@@ -79,7 +81,6 @@ done:
         config++;
     }
 
-    clear(0x07);
     for (;;) {
 	    show_menu();
     }

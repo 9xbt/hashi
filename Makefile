@@ -1,6 +1,6 @@
 # Toolchain
 AS = nasm
-CC = gcc
+CC = clang
 
 # Automatically find sources
 S_SOURCES = $(shell cd src && find -L * -type f -name '*.S')
