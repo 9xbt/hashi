@@ -34,6 +34,7 @@ void print_hex(uint32_t val) {
     while (i-- > 0) {
         putchar("0123456789abcdef"[val >> (i * 4) & 0x0F], 0x07);
     }
+    putchar('\n', 0x07);
 }
 
 bool load_elf(void) {
@@ -81,8 +82,12 @@ void boot([[maybe_unused]] struct os *os) {
         return;
     }
 
+    /*
+     * TODO: parse E820 memory map and give kernel a multiboot struct
+     */
+
     __asm__ __volatile__ (
 		"jmp *%0" :: "r"(xmain), "a"(MULTIBOOT_EAX_MAGIC), "b"(nullptr));
 
-    for (;;) __asm__("hlt");
+    __builtin_unreachable();
 }

@@ -6,7 +6,7 @@
 
 extern void do_bios_call(int function, int extra);
 
-struct os os_list[10];
+struct os os_list[MAX_ENTRIES];
 
 int longest_length(void) {
     int max = 0, len = 0;

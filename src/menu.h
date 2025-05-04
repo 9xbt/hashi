@@ -1,4 +1,5 @@
 #pragma once
+#define MAX_ENTRIES 10
 
 struct os {
     char *name;

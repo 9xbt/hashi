@@ -12,6 +12,7 @@ hashi (箸) is a small multiboot-compatible x86 bootloader
 - [ ] E820 memory map parsing
 - [ ] VBE mode list parsing
 - [X] ISO 9660 filesystem reading
-- [ ] Multiboot kernel loading
-    - [ ] Elf32 parser
+- [X] Multiboot kernel loading
+    - [X] Elf32 parser
+    - [ ] Multiboot struct creation
 - [X] Config parsing
