@@ -5,6 +5,12 @@
 #define MULTIBOOT_MAGIC        0x1BADB002
 #define MULTIBOOT_EAX_MAGIC    0x2BADB002
 
+#define MULTIBOOT_MEMORY_AVAILABLE        1
+#define MULTIBOOT_MEMORY_RESERVED         2
+#define MULTIBOOT_MEMORY_ACPI_RECLAIMABLE 3
+#define MULTIBOOT_MEMORY_NVS              4
+#define MULTIBOOT_MEMORY_BADRAM           5
+
 struct multiboot {
     uint32_t flags;
     uint32_t mem_lower;
@@ -37,5 +43,14 @@ struct multiboot {
 	uint8_t  framebuffer_bpp;
 	uint8_t  framebuffer_type;
 } __attribute__((packed));
+
+struct multiboot_memory_map {
+	uint32_t size;
+	uint32_t addr_low;
+	uint32_t addr_high;
+	uint32_t len_low;
+    uint32_t len_high;
+	uint32_t type;
+} __attribute__ ((packed));
 
 void boot(struct os *os);

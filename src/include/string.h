@@ -1,4 +1,5 @@
 #pragma once
+#include <stddef.h>
 
 #define DATA_LOAD_BASE 0x4000000
 
@@ -12,9 +13,10 @@ static inline unsigned char inb(unsigned short port) {
     return ret;
 }
 
-void *memcpy(void *restrict dest, const void *restrict src, long n);
-void *memset(void *dest, int c, long n);
-int strcmp(const char *l, const char *r);
-int strncmp(const char *l, const char *r, unsigned long n);
+void *memcpy(void *restrict dest, const void *restrict src, size_t n);
+void *memset(void *dest, int c, size_t n);
+size_t strlen(const char *s);
+int strcmp(const char *a, const char *b);
+int strncmp(const char *a, const char *b, size_t n);
 char *strchr(const char *s, int c);
-unsigned long strlen(const char *s);
+char *strcpy(char *dest, const char *src);

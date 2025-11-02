@@ -1,8 +1,7 @@
-#include "text.h"
-#include "kbd.h"
-#include "menu.h"
-#include "util.h"
-#include "multiboot.h"
+#include <text.h>
+#include <ps2.h>
+#include <menu.h>
+#include <string.h>
 
 extern void do_bios_call(int function, int extra);
 
@@ -27,23 +26,19 @@ void clear_row(int count, int attr) {
 }
 
 void show_menu(void) {
-start:
     clear(0x07);
-    puts(
-        "hashi bootloader v0.1\n"
+    puts("hashi bootloader v0.1\n"
         "\n"
         "Please select the operating system to start:\n"
-        "\n",
-    0x07);
+        "\n", 0x07);
     for (; os_list[y - 4].name; y++);
-    puts(
-        "\n"
+    puts("\n"
         "Use \030 and \031 to move the highlight to your choice.\n"
-        "Press enter to choose and escape to exit.\n",
-    0x07);
+        "Press enter to choose or escape to exit.\n", 0x07);
 
     int selection = 0;
     int longest = longest_length() + 8;
+    int c;
     for (;;) {
         x = 0; y = 4;
 
@@ -56,15 +51,15 @@ start:
         }
 
     readkey:
-        int c = read_scancode();
+        c = read_scancode();
 
         switch (c) {
             case '\001':
                 do_bios_call(3, 0);
                 break;
             case '\034':
-                boot(&os_list[selection]);
-                goto start;
+                // boot(&os_list[selection]);
+                break;
             case 'H':
                 selection--;
                 break;
@@ -78,6 +73,4 @@ start:
         if (selection < 0) selection = 0;
         if (!os_list[selection].name) selection--;
     }
-
-    for (;;);
 }

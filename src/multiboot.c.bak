@@ -1,5 +1,5 @@
 #include "multiboot.h"
-#include "kbd.h"
+#include "ps2.h"
 #include "menu.h"
 #include "text.h"
 #include "iso9660.h"
@@ -82,12 +82,23 @@ void boot([[maybe_unused]] struct os *os) {
         return;
     }
 
-    /*
+    /**
      * TODO: parse E820 memory map and give kernel a multiboot struct
      */
 
+    static struct multiboot_memory_map mmap[1] = {0};
+    mmap[0].addr_low = 0x100000;
+    mmap[0].len_low = 0x4000000; // 64M
+    mmap[0].size = sizeof(struct multiboot_memory_map);
+    mmap[0].type = MULTIBOOT_MEMORY_AVAILABLE;
+    static struct multiboot mboot = {0};
+    mboot.mmap_addr = (uint32_t)&mmap;
+    mboot.mmap_length = (uint32_t)sizeof(mmap);
+
+    enable_cursor();
+
     __asm__ __volatile__ (
-		"jmp *%0" :: "r"(xmain), "a"(MULTIBOOT_EAX_MAGIC), "b"(nullptr));
+		"jmp *%0" :: "r"(xmain), "a"(MULTIBOOT_EAX_MAGIC), "b"(&mboot));
 
     __builtin_unreachable();
 }

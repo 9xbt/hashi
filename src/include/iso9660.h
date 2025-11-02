@@ -46,8 +46,8 @@ typedef struct {
 } __attribute__((packed)) iso_9660_directory_entry_t;
 
 typedef struct {
-	uint8_t type; /* 0x01 */
-	char id[5]; /* CD001 */
+	uint8_t type; 	/* 0x01 */
+	char id[5]; 	/* CD001 */
 
 	uint8_t version;
 	uint8_t _unused0;
@@ -103,7 +103,7 @@ typedef struct {
 	char application_use[];
 } __attribute__((packed)) iso_9660_volume_descriptor_t;
 
-#define ISO_SECTOR_SIZE 2048
+#define ISO_SECTOR_SIZE	 2048
 
 #define FLAG_HIDDEN      0x01
 #define FLAG_DIRECTORY   0x02

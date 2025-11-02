@@ -11,8 +11,8 @@ OBJS := $(addprefix bin/, $(S_SOURCES:.S=.o) $(C_SOURCES:.c=.o))
 
 # Flags
 ASFLAGS = -f elf32
-CCFLAGS = -m32 -std=c23 -Wall -Wextra -ffreestanding -nostdlib -fno-stack-protector -fno-stack-check -fno-lto -fno-pic -mno-sse -mno-sse2 -mno-red-zone
-QEMUFLAGS = -debugcon stdio -cdrom bin/$(IMAGE_NAME).iso -boot d
+CCFLAGS = -m32 -std=gnu11 -Wall -Wextra -ffreestanding -nostdlib -fno-stack-protector -fno-stack-check -fno-lto -fno-pic -mno-sse -mno-sse2 -mno-red-zone -Isrc/include/
+QEMUFLAGS = -serial stdio -cdrom bin/$(IMAGE_NAME).iso -boot d -M q35
 
 # Output image name
 IMAGE_NAME = hashi

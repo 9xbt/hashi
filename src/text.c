@@ -1,5 +1,6 @@
-#include "util.h"
-#include "text.h"
+#include <string.h>
+#include <text.h>
+
 #define WIDTH  80
 #define HEIGHT 25
 
@@ -7,6 +8,18 @@ int x, y;
 static unsigned short *vmem = (unsigned short *)0xb8000;
 
 extern void do_bios_call(int function, int extra);
+
+void disable_cursor(void) {
+	outb(0x3D4, 0x0A);
+    outb(0x3D5, 0x20);
+}
+
+void enable_cursor(void) {
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, (inb(0x3D5) & 0xC0) | 0);
+    outb(0x3D4, 0x0B);
+    outb(0x3D5, (inb(0x3D5) & 0xE0) | 15);
+}
 
 void scroll(void) {
     for (int i = 0; i < WIDTH * (HEIGHT - 1); i++)
@@ -47,7 +60,6 @@ void putchar(char c, int attr) {
             break;
         default:
             vmem[y * WIDTH + x++] = (attr << 8) | c;
-
             if (x >= WIDTH) {
                 x = 0; y++;
             }
